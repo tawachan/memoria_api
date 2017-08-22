@@ -17,6 +17,13 @@ class TodosController < ApplicationController
     end
   end
 
+  def update
+    @todo = Todo.find(params[:id])
+    if @todo.update(todo_params)
+      render json: @todo
+    end
+  end
+
   def destroy
     @todo = Todo.find(params[:id])
     if @todo.destroy
@@ -26,7 +33,7 @@ class TodosController < ApplicationController
 
   private
   def todo_params
-    params.require(:todo).permit(:task, :description, :page, :status, :done_at)
+    params.require(:todo).permit(:task, :description, :page, :status, :done_at, :project_id, :user_id)
   end
 
   def json_with_serializer(todos)
