@@ -12,6 +12,7 @@ gem 'puma', '~> 3.0'
 gem 'jbuilder', '~> 2.5'
 gem 'devise'
 gem 'rack-cors'
+gem 'active_model_serializers', '~> 0.10.0'
 
 group :development, :test do
   gem 'byebug', platform: :mri
