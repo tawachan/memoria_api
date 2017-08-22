@@ -14,6 +14,8 @@ class TodosController < ApplicationController
     todo = Todo.new(todo_params)
     if todo.save
       render json: todo
+    else
+      raise StandardError, "failed to create"
     end
   end
 
@@ -21,6 +23,8 @@ class TodosController < ApplicationController
     todo = Todo.find(params[:id])
     if todo.update(todo_params)
       render json: todo
+    else
+      raise StandardError, "failed to update"
     end
   end
 
@@ -28,6 +32,8 @@ class TodosController < ApplicationController
     todo = Todo.find(params[:id])
     if todo.destroy
       render json: todo
+    else
+      raise StandardError, "failed to destroy"
     end
   end
 
