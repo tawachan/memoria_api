@@ -11,6 +11,8 @@ gem 'pg', '~> 0.18'
 gem 'puma', '~> 3.0'
 gem 'jbuilder', '~> 2.5'
 gem 'devise'
+gem 'devise_token_auth'
+gem 'omniauth'
 gem 'rack-cors'
 gem 'active_model_serializers', '~> 0.10.0'
 

@@ -3,7 +3,6 @@ class CreateProjects < ActiveRecord::Migration[5.0]
     create_table :projects do |t|
       t.string :name
       t.text :description
-      t.references :user, foreign_key: true
       t.integer :status
 
       t.timestamps

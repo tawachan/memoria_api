@@ -4,7 +4,7 @@ class CreateTodos < ActiveRecord::Migration[5.0]
       t.string :task
       t.text :description
       t.string :page
-      t.integer :status
+      t.integer :status, default: 0
       t.timestamp :done_at
       t.timestamps
     end
