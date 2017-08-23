@@ -1,37 +1,42 @@
 class ProjectsController < ApplicationController
+  before_action :authenticate_user!
+  before_action :set_projects, only: [:index]
+  before_action :set_project, only: [:show, :update, :destroy]
 
   def index
-    projects = Project.all
-    render json: json_with_serializer(projects)
+    render json: json_with_serializer(@projects)
   end
 
   def show
-    project = Project.find(params[:id])
-    render json: project
+    render json: @project
   end
 
   def create
-    project = Project.new(project_params)
-    if project.save
-      render json: project
+    @project = Project.new(project_params)
+    if @project.save
+      render json: @project
     else
       raise StandardError, "failed to create"
     end
   end
 
   def update
-    project = Project.find(params[:id])
-    if project.update(project_params)
-      render json: project
+    if !is_mine?
+      raise StandardError, "only your own projects can be updated"
+    end
+    if @project.update(project_params)
+      render json: @project
     else
       raise StandardError, "failed to update"
     end
   end
 
   def destroy
-    project = Project.find(params[:id])
-    if project.destroy
-      render json: project
+    if !is_mine?
+      raise StandardError, "only your own projects can be destroyed"
+    end
+    if @project.destroy
+      render json: @project
     else
       raise StandardError, "failed to destroy"
     end
@@ -39,10 +44,20 @@ class ProjectsController < ApplicationController
 
   private
   def project_params
-    params.require(:project).permit(:name, :description, :status, :project_id, :user_id)
+    params.require(:project).permit(:name, :description, :status, :project_id).merge(user: current_user)
   end
 
-  private
+  def set_projects
+    @projects = current_user.projects
+  end
+
+  def set_project
+    @project = Project.find(params[:id])
+  end
+  def is_mine?
+    current_user.id == @project.user_id
+  end
+
   def json_with_serializer(projects)
     return ActiveModel::Serializer::CollectionSerializer.new(
                projects,

@@ -1,38 +1,42 @@
 class TodosController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_todos, only: [:index]
+  before_action :set_todo, only: [:show, :update, :destroy]
 
   def index
-    todos = Todo.all
-    render json: json_with_serializer(todos)
+    render json: json_with_serializer(@todos)
   end
 
   def show
-    todo = Todo.find(params[:id])
-    render json: todo
+    render json: @todo
   end
 
   def create
-    todo = Todo.new(todo_params)
-    if todo.save
-      render json: todo
+    @todo = Todo.new(todo_params)
+    if @todo.save
+      render json: @todo
     else
       raise StandardError, "failed to create"
     end
   end
 
   def update
-    todo = Todo.find(params[:id])
-    if todo.update(todo_params)
-      render json: todo
+    if !is_mine?
+      raise StandardError, "only your own todos can be updated"
+    end
+    if @todo.update(todo_params)
+      render json: @todo
     else
       raise StandardError, "failed to update"
     end
   end
 
   def destroy
-    todo = Todo.find(params[:id])
-    if todo.destroy
-      render json: todo
+    if !is_mine?
+      raise StandardError, "only your own todos can be destroyed"
+    end
+    if @todo.destroy
+      render json: @todo
     else
       raise StandardError, "failed to destroy"
     end
@@ -40,7 +44,18 @@ class TodosController < ApplicationController
 
   private
   def todo_params
-    params.require(:todo).permit(:task, :description, :page, :status, :done_at, :project_id, :user_id)
+    params.require(:todo).permit(:task, :description, :page, :status, :done_at, :project_id).merge(user: current_user)
+  end
+
+  def set_todos
+    @todos = current_user.todos
+  end
+
+  def set_todo
+    @todo = Todo.find(params[:id])
+  end
+  def is_mine?
+    current_user.id == @todo.user_id
   end
 
   def json_with_serializer(todos)
