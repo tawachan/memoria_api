@@ -4,6 +4,8 @@ class ApplicationController < ActionController::API
   rescue_from StandardError, :with => :error_api
 
   def error_api(e = nil)
+    Rails.logger.error e.message
+    Rails.logger.error e.backtrace.join("\n")
     render json: {status: "ng", code: 500, content: {message: "#{e.message}"} }
   end
 
