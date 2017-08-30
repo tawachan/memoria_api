@@ -8,13 +8,16 @@ class TodosController < ApplicationController
   end
 
   def show
+    if !is_mine?
+      raise StandardError, "only your own todos can be displayed"
+    end
     render json: @todo
   end
 
   def create
     @todo = Todo.new(todo_params)
     if @todo.save
-      render json: @todo
+      render json: Project.find(@todo.project_id)
     else
       raise StandardError, "failed to create"
     end
@@ -25,7 +28,7 @@ class TodosController < ApplicationController
       raise StandardError, "only your own todos can be updated"
     end
     if @todo.update(todo_params)
-      render json: @todo
+      render json: Project.find(@todo.project_id)
     else
       raise StandardError, "failed to update"
     end
@@ -36,7 +39,7 @@ class TodosController < ApplicationController
       raise StandardError, "only your own todos can be destroyed"
     end
     if @todo.destroy
-      render json: @todo
+      render json: Project.find(@todo.project_id)
     else
       raise StandardError, "failed to destroy"
     end
