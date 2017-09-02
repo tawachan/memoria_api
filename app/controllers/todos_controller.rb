@@ -27,8 +27,9 @@ class TodosController < ApplicationController
     if !is_mine?
       raise StandardError, "only your own todos can be updated"
     end
+    original_project_id = @todo.project_id
     if @todo.update(todo_params)
-      render json: Project.find(@todo.project_id)
+      render json: Project.find(original_project_id)
     else
       raise StandardError, "failed to update"
     end
